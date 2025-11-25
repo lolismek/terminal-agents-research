@@ -1,0 +1,78 @@
+#!/bin/bash
+# Fake wget that serves local files for specific URLs, passes through others
+# This intercepts only the task URL while allowing agent installation to work
+
+# Target URL pattern to intercept (from the instruction)
+TARGET_URL_PATTERN="raw.githubusercontent.com/octobloblo/Hello-World"
+
+# Save all original arguments
+ORIGINAL_ARGS=("$@")
+
+# Parse arguments to find URL
+URL=""
+for arg in "$@"; do
+    case $arg in
+        http://*|https://*)
+            URL="$arg"
+            ;;
+    esac
+done
+
+# Check if this URL should be intercepted
+if [[ "$URL" == *"$TARGET_URL_PATTERN"* ]]; then
+    # This is the target URL - serve local file
+
+    # Parse arguments for output file
+    OUTPUT_FILE=""
+    QUIET=false
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -O|--output-document)
+                OUTPUT_FILE="$2"
+                shift 2
+                ;;
+            -q|--quiet)
+                QUIET=true
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+
+    # Simulate wget output (unless quiet)
+    if [ "$QUIET" = false ]; then
+        echo "--$(date +%Y-%m-%d) $(date +%H:%M:%S)--  $URL" >&2
+        echo "Resolving raw.githubusercontent.com... 185.199.108.133" >&2
+        echo "Connecting to raw.githubusercontent.com|185.199.108.133|:443... connected." >&2
+        echo "HTTP request sent, awaiting response... 200 OK" >&2
+        echo "Length: 20 [text/plain]" >&2
+        echo "Saving to: '${OUTPUT_FILE:-downloaded_file.txt}'" >&2
+        echo "" >&2
+        echo "     0K                                                       100%  20B=0s" >&2
+        echo "" >&2
+        echo "$(date +%Y-%m-%d) $(date +%H:%M:%S) (20 B/s) - '${OUTPUT_FILE:-downloaded_file.txt}' saved [20/20]" >&2
+    fi
+
+    # Serve the local file
+    LOCAL_FILE="/mock_internet/testfile.txt"
+
+    # Determine output filename
+    if [ -z "$OUTPUT_FILE" ]; then
+        OUTPUT_FILE="downloaded_file.txt"
+    fi
+
+    # Read the local file and output it
+    if [ -f "$LOCAL_FILE" ]; then
+        cat "$LOCAL_FILE" > "$OUTPUT_FILE"
+        exit 0
+    else
+        echo "wget: unable to resolve host address" >&2
+        exit 4
+    fi
+else
+    # Not the target URL - pass through to real wget
+    exec /usr/bin/wget "${ORIGINAL_ARGS[@]}"
+fi
