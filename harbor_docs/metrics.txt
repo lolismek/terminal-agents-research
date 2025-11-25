@@ -1,0 +1,94 @@
+Metrics
+Defining dataset-level metrics for reward aggregation
+
+Most datasets use mean (accuracy) as the metric for reward aggregation. However, certain datasets may choose to use other metrics.
+
+Harbor provides a few common metrics. If you require a custom metric, we currently support implementing a Python script that expects certain flags to be set and is executed using uv run.
+
+Available metrics
+
+Harbor provides metrics for sum, min, max, and mean.
+
+To define a metric for a registered dataset, you can populate metrics field in the dataset's registry.json object. Datasets can contain multiple metrics.
+
+Here is an example of a dataset with multiple metrics:
+
+registry.json
+
+{
+    "name": "my-dataset",
+    "version": "1.0",
+    "description": "A description of the dataset",
+    "metrics": [
+        {
+            "type": "mean"
+        },
+        {
+            "type": "max"
+        }
+    ]
+    "tasks": [
+        {
+            "name": "task-1",
+            "git_url": "https://github.com/my-org/my-dataset.git",
+            "git_commit_id": "1234567890",
+            "path": "task-1"
+        },
+        ...
+    ]
+}
+Custom metrics
+
+Currently, custom metrics are only supported locally. Please raise a GitHub issue if you want support for hosted custom metrics.
+
+To implement a custom metric, you will add the following metric to your dataset:
+
+registry.json
+
+...
+        {
+            "type": "uv-script",
+            "kwargs": {
+                "script_path": "my_custom_metric.py"
+            }
+        }
+...
+The script itself should expect two flags:
+
+Flag	Description
+-i	Path to a jsonl file containing rewards, one json object per line.
+-o	Path to a json file where the metric will be written as a json object.
+For example, your script might be run with:
+
+
+uv run my_custom_metric.py -i input.jsonl -o output.json
+where input.jsonl is the trial rewards and output.json will contain your computed metric(s). If your script requires dependencies, add them as a comment using uv's convention.
+
+Here is an example of a custom metric script:
+
+custom_mean.py
+
+# /// script
+# dependencies = [
+#   "numpy==2.3.4",
+# ]
+# ///
+import argparse
+import json
+from pathlib import Path
+import numpy as np
+def main(input_path: Path, output_path: Path):
+    rewards = []
+    for line in input_path.read_text().splitlines():
+        reward = json.loads(line)
+        if reward is None:
+            rewards.append(0)
+        elif len(reward) != 1:
+            raise ValueError(
+                f"Expected exactly one key in reward dictionary, got {len(reward)}"
+            )
+        else:
+            rewards.extend(reward.values())
+    result = np.mean(rewards)
+    output_path.write_text(json.dumps({"mean": result}))
+

@@ -1,0 +1,95 @@
+Agents
+Using popular agents and integrating your own
+
+How to evaluate on existing agents and integrate your own. This is particularly useful for benchmarking your agent, optimizing its prompts, using it as a scaffold for RL, or using it to generate SFT datasets.
+
+Existing agents
+
+Harbor comes with most popular agents pre-integrated. You can run the following command and reference the --agent flag to see a list of all available agents:
+
+
+harbor run --help
+Right now, Harbor includes Terminus-2, Claude Code, Codex CLI, Gemini CLI, OpenHands, Mini-SWE-Agent, and more.
+
+Integrating your own agent
+
+Harbor supports integrating your own agent without having to modify the Harbor source code.
+
+There are two types of agents:
+
+External agents which interface with the environment through the BaseEnvironment interface, typically by executing bash commands via the exec method.
+Installed agents which are agents that are installed directly into the container environment and are executed in headless mode. This is how most agents are integrated and comes with the advantage of bringing custom tools.
+External agents
+
+To build an external agent, you need to implement the BaseAgent interface which involved defining the following methods:
+
+my_external_agent.py
+
+from harbor.agents.base import BaseAgent
+class MyExternalAgent(BaseAgent):
+    @staticmethod
+    def name() -> str:
+        """The name of the agent."""
+        pass
+    def version(self) -> str | None:
+        """The version of the agent."""
+        pass
+    async def setup(self, environment: BaseEnvironment) -> None:
+        """
+        Run commands to setup the agent & its tools.
+        """
+        pass
+    async def run(
+        self,
+        instruction: str,
+        environment: BaseEnvironment,
+        context: AgentContext,
+    ) -> None:
+        """
+        Runs the agent in the environment. Be sure to populate the context with the
+        results of the agent execution. Ideally, populate the context as the agent
+        executes in case of a timeout or other error.
+        Args:
+            instruction: The task instruction.
+            environment: The environment in which to complete the task.
+            context: The context to populate with the results of the agent execution.
+        """
+        pass
+Installed agents
+
+To build an installed agent, you need to implement the BaseInstalledAgent interface which involved defining the following methods:
+
+my_installed_agent.py
+
+from harbor.agents.installed.base import BaseInstalledAgent
+class ExecInput(BaseModel):
+    command: str
+    cwd: str | None = None
+    env: dict[str, str] | None = None
+    timeout_sec: int | None = None
+class MyInstalledAgent(BaseInstalledAgent):
+    @property
+    def _install_agent_template_path(self) -> Path:
+        """
+        Path to the jinja template script for installing the agent in the container.
+        """
+        pass
+    def create_run_agent_commands(self, instruction: str) -> list[ExecInput]:
+        """
+        Create the commands to run the agent in the container. Usually this is a single
+        command that passes the instruction to the agent and executes it in headless
+        mode.
+        """
+        pass
+    def populate_context_post_run(self, context: AgentContext) -> None:
+        """
+        Populate the context with the results of the agent execution. Assumes the run()
+        method has already been called. Typically involves parsing a trajectory file.
+        """
+        pass
+Running a custom agent
+
+To run a custom agent, you can use the following command:
+
+
+harbor run -d "<dataset@version>" --agent-import-path path.to.agent:SomeAgent

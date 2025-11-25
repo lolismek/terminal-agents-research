@@ -1,0 +1,61 @@
+Evals
+Running a dataset
+
+Harbor is built by the creators of Terminal-Bench with evals as a core use case.
+
+What is a dataset?
+
+In Harbor, a dataset is a collection of tasks in the Harbor task format. Tasks are agentic environments consisting of an instruction, container environment, and test script.
+
+Datasets can be used to evaluate agents and models, to train models, or to optimize prompts and other aspects of an agent.
+
+Viewing registered benchmarks
+
+Harbor comes with a default registry defined in a registry.json file stored in the repository root.
+
+To view all available datasets, you can use the following command:
+
+
+harbor datasets list
+Running a benchmark from the registry
+
+To evaluate on Terminal-Bench, you can use the following command:
+
+
+harbor run -d terminal-bench@2.0 -m "<model>" -a "<agent>"
+Harbor will automatically download the dataset based on the registry definition (which points to version controlled task definitions).
+
+To evaluate on SWE-Bench Verified:
+
+
+harbor run -d swe-bench-verified@1.0 -m "<model>" -a "<agent>"
+If you leave off the version, Harbor will use the latest version of the dataset.
+
+Running a local dataset
+
+If you want to evaluate on a local dataset, you can use the following command:
+
+
+harbor run -p "<path/to/dataset>" -m "<model>" -a "<agent>"
+Analyzing results
+
+Running the harbor run command creates a job which by default is stored in the jobs directory.
+
+The file structure looks something like this:
+
+
+jobs/job-name
+├── config.json               # Job config
+├── result.json               # Job result
+├── trial-name
+│   ├── config.json           # Trial config
+│   ├── result.json           # Trial result
+│   ├── agent                 # Agent directory, contents depend on agent implementation
+│   │   ├── recording.cast
+│   │   └── trajectory.json
+│   └── verifier              # Verifier directory, contents depend on test.sh implementation
+│       ├── ctrf.json
+│       ├── reward.txt
+│       ├── test-stderr.txt
+│       └── test-stdout.txt
+└── ...                       # More trials
