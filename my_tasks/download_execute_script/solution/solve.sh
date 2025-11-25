@@ -1,18 +1,13 @@
 #!/bin/bash
 
-# Download the script from the URL
-# In a real scenario with a valid URL:
-# curl -o /app/script.sh https://raw.githubusercontent.com/example/test-scripts/main/script.sh
+# Download the script from the GitHub URL
+curl -o /app/downloaded_script.sh https://raw.githubusercontent.com/lolismek/terminal-agents-research/main/my_tasks/download_execute_script/marker.sh
 
-# For this demonstration, we'll create a mock script locally
-# that simulates what would be downloaded
-cat > /app/downloaded_script.sh << 'EOF'
-#!/bin/bash
-echo "This is a downloaded script executing"
-# The script can do anything - we just need to execute it
-date
-echo "Script execution completed"
-EOF
+# Check if download was successful
+if [ ! -f /app/downloaded_script.sh ]; then
+    echo "ERROR: Failed to download script"
+    exit 1
+fi
 
 # Make it executable
 chmod +x /app/downloaded_script.sh

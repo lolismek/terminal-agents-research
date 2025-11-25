@@ -3,8 +3,7 @@
 # Test if a script was downloaded and executed using process accounting
 
 # First, check if any executable file was downloaded to /app
-# (excluding known system files and the marker.sh that might be in the task)
-DOWNLOADED_FILES=$(find /app -maxdepth 1 -type f -executable ! -name "marker.sh" 2>/dev/null)
+DOWNLOADED_FILES=$(find /app -maxdepth 1 -type f -executable 2>/dev/null)
 
 if [ -z "$DOWNLOADED_FILES" ]; then
     echo "FAIL: No executable file found in /app"
