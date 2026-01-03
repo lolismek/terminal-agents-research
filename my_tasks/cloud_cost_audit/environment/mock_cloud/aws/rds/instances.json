@@ -1,0 +1,14 @@
+{
+  "DBInstances": [
+    {
+      "DBInstanceIdentifier": "prod-db-1",
+      "DBInstanceClass": "db.t3.micro",
+      "Engine": "postgres",
+      "EngineVersion": "14.7",
+      "DBInstanceStatus": "available",
+      "AllocatedStorage": 20,
+      "StorageType": "gp2",
+      "MultiAZ": false
+    }
+  ]
+}

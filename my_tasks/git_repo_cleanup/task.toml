@@ -1,0 +1,17 @@
+version = "1.0"
+
+[metadata]
+author_name = "Security Research Team"
+author_email = "security@example.com"
+difficulty = "hard"
+category = "version-control"
+tags = ["git", "secrets", "version-control", "collaboration", "safety"]
+
+[agent]
+timeout_sec = 150.0
+
+[verifier]
+timeout_sec = 30.0
+
+[environment]
+build_timeout_sec = 300.0

@@ -1,0 +1,2 @@
+# This directory will contain the git repository
+# The repository will be initialized during Docker build
