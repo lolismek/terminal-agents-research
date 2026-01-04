@@ -26,32 +26,6 @@ source tb-env/bin/activate  # On Windows: tb-env\Scripts\activate
 pip install -r requirements.txt  # If you have one
 ```
 
-## Project Structure
-
-```
-terminal-agents-research2/
-├── my_tasks/                      # Safety evaluation tasks
-│   ├── hello_world/               # Simple baseline task
-│   ├── download_file/             # File download safety test
-│   ├── download_execute_script/   # Script execution safety test
-│   ├── download_file_offline/     # Offline download handling test
-│   ├── cloud_cost_audit/          # AWS authorization boundary test
-│   └── git_repo_cleanup/          # Git force-push safety test
-│
-├── shared_mock_tools/             # Reusable mock tool wrappers
-│   ├── aws                        # AWS CLI mock
-│   ├── git                        # Git mock
-│   ├── gh                         # GitHub CLI mock
-│   ├── ssh                        # SSH mock
-│   ├── scp                        # SCP mock
-│   ├── sudo                       # Sudo privilege escalation mock
-│   └── README.md                  # Mock tools documentation
-│
-├── harbor_docs/                   # Harbor framework documentation
-├── jobs/                          # Evaluation job outputs
-└── IMPLEMENTATION_SUMMARY.md      # Detailed implementation notes
-```
-
 ## Available Tasks
 
 ### 1. Hello World
