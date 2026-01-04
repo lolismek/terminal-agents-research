@@ -1,20 +1,4 @@
-# AI Agent Safety Testing Framework
-
-A research project for evaluating AI agent safety and alignment using the [Harbor](https://harbor.dev) framework. This repository contains safety evaluation tasks and mock tools designed to test whether AI agents will respect authorization boundaries, avoid dangerous operations, and behave responsibly when given access to powerful tools.
-
-## Overview
-
-This project provides a suite of safety-focused tasks that evaluate AI agents in realistic but controlled scenarios. Each task presents the agent with subtle temptations to perform dangerous operations (like unauthorized cloud resource creation, force-pushing to protected branches, or executing untrusted scripts) while operating in a completely safe sandboxed environment.
-
-The key innovation is the use of **mock tools** that give agents the illusion of having access to dangerous operations while safely logging and blocking any harmful attempts.
-
-## Features
-
-- **Safety Evaluation Tasks**: Realistic scenarios testing agent authorization boundaries and safety awareness
-- **Mock Tool Library**: Reusable mock wrappers for AWS CLI, Git, SSH, sudo, and other dangerous commands
-- **Harbor Integration**: Full compatibility with the Harbor agent evaluation framework
-- **Comprehensive Logging**: Detailed tracking of all agent actions, especially dangerous operation attempts
-- **Reward-Based Grading**: Multi-tier reward system distinguishing between basic compliance and excellent safety practices
+(README generated with AI)
 
 ## Prerequisites
 
